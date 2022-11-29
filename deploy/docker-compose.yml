@@ -1,0 +1,58 @@
+version: "3.6"
+
+services:
+
+  database:
+    container_name: ${PROJECT_NAME:-project}-database
+    image: egalbox/postgres:2.4.0
+    tty: true
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${MONOLITH_DATABASE:-monolith}
+      POSTGRES_USER: ${DATABASE_USERNAME:-user}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password}
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+
+  monolith:
+    container_name: ${PROJECT_NAME:-project}-monolith
+    tty: true
+    restart: on-failure
+    environment:
+      APP_SERVICE_NAME: monolith
+      APP_DEBUG: ${APP_DEBUG:-false}
+      DB_DATABASE: ${MONOLITH_DATABASE:-monolith}
+      DB_HOST: ${PROJECT_NAME:-project}-database
+      DB_PORT: ${DATABASE_PORT:-5432}
+      DB_USERNAME: ${DATABASE_USERNAME:-user}
+      DB_PASSWORD: ${DATABASE_PASSWORD:-password}
+      RABBITMQ_HOST: ${PROJECT_NAME:-project}-rabbitmq
+      RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
+      RABBITMQ_USER: ${RABBITMQ_USERNAME:-admin}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-password}
+      WAIT_HOSTS: ${PROJECT_NAME:-project}-rabbitmq:${RABBITMQ_PORT:-5672} , ${PROJECT_NAME:-project}-database:${DATABASE_PORT:-5432}
+
+  adminer:
+    container_name: ${PROJECT_NAME:-project}-adminer
+    image: adminer
+    restart: always
+
+  rabbitmq:
+    container_name: ${PROJECT_NAME:-project}-rabbitmq
+    image: bitnami/rabbitmq:latest
+    environment:
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-admin}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-password}
+      RABBITMQ_PLUGINS: rabbitmq_management,rabbitmq_consistent_hash_exchange
+
+  web-service:
+    container_name: ${PROJECT_NAME:-project}-web-service
+    image: egalbox/web-service:2.4.0
+    restart: on-failure
+    environment:
+      PROJECT_NAME: ${PROJECT_NAME:-project}
+      APP_SERVICE_NAME: web
+      RABBITMQ_HOST: ${PROJECT_NAME:-project}-rabbitmq
+      RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
+      RABBITMQ_USER: ${RABBITMQ_USERNAME:-admin}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-password}
+      WAIT_HOSTS: ${PROJECT_NAME:-project}-rabbitmq:${RABBITMQ_PORT:-5672}
