@@ -15,8 +15,8 @@ class Init extends Migration
             $table->string('last_name');
             $table->string('email')->unique();
             $table->string('password');
-            $table->boolean('is_admin');
-            $table->integer('points');
+            $table->boolean('is_admin')->default(0);
+            $table->integer('points')->default(0);
             $table->timestamps();
         });
 

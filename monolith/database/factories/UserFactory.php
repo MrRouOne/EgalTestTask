@@ -17,7 +17,7 @@ class UserFactory extends Factory
             'first_name' => $this->faker->firstName,
             'last_name' => $this->faker->lastName,
             'email' => $this->faker->unique()->email,
-            'password' => Hash::make($this->faker->password),
+            'password' => $this->faker->password,
             'is_admin' => false,
             'points' => $this->faker->numberBetween(0, 1000),
         ];

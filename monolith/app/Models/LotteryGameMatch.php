@@ -2,24 +2,23 @@
 
 namespace App\Models;
 
+use App\Events\CreatingLotteryGameMatchEvent;
+use App\Events\UpdatedLotteryGameMatchEvent;
+use App\Events\UpdatingLotteryGameMatchEvent;
 use Egal\Model\Model as EgalModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
- * @property $id {@property-type field} {@primary-key}
- * @property $game_id {@property-type field}
- * @property $start_date {@property-type field}
- * @property $start_time {@property-type field}
- * @property $winner_id {@property-type field}
- * @property $created_at {@property-type field}
- * @property $updated_at {@property-type field}
+ * @property $id                        {@property-type field} {@primary-key}
+ * @property $game_id                   {@property-type field}
+ * @property $start_date                {@property-type field}
+ * @property $start_time                {@property-type field}
+ * @property $winner_id                 {@property-type field}
+ * @property $created_at                {@property-type field}
+ * @property $updated_at                {@property-type field}
  *
- * @action getMetadata {@statuses-access guest|logged}
- * @action getItem {@statuses-access guest|logged}
- * @action getItems {@statuses-access logged} {@roles-access super_first_role|super_second_role}
- * @action create {@statuses-access logged} {@roles-access super_first_role,super_second_role}
- * @action update {@statuses-access logged} {@permissions-access super_first_permission|super_second_permission}
- * @action delete {@statuses-access logged} {@permissions-access super_first_permission,super_second_permission}
+ * @action create                       {@statuses-access logged} {@roles-access admin}
+ * @action closure                      {@statuses-access logged} {@roles-access admin}
  */
 class LotteryGameMatch extends EgalModel
 {
@@ -37,6 +36,20 @@ class LotteryGameMatch extends EgalModel
         'updated_at',
     ];
 
+    protected $dispatchesEvents = [
+        'creating' => CreatingLotteryGameMatchEvent::class,
+        'updated' => UpdatedLotteryGameMatchEvent::class,
+        'updating' => UpdatingLotteryGameMatchEvent::class,
+    ];
+
+    public static function actionClosure($id)
+    {
+        $winner = self::query()->findOrFail($id)->users()->inRandomOrder()->first();
+        $winner = !$winner ? User::query()->inRandomOrder()->first() : $winner;
+
+        return self::actionUpdate($id, ['winner_id' => $winner->id]);
+    }
+
     public function lotteryGame()
     {
         return $this->belongsTo(LotteryGame::class, 'game_id');
@@ -49,7 +62,7 @@ class LotteryGameMatch extends EgalModel
 
     public function users()
     {
-        return $this->belongsToMany(User::class, 'lottery_game_match_users','lottery_game_match_id','user_id');
+        return $this->belongsToMany(User::class, 'lottery_game_match_users', 'lottery_game_match_id', 'user_id');
     }
 
 }

@@ -18,6 +18,7 @@ services:
     tty: true
     restart: on-failure
     environment:
+      APP_SERVICE_KEY: ${MONOLITH_KEY:-siu2hrf0gdfvcg67433xxsd}
       APP_SERVICE_NAME: monolith
       APP_DEBUG: ${APP_DEBUG:-false}
       DB_DATABASE: ${MONOLITH_DATABASE:-monolith}
