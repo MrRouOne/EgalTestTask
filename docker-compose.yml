@@ -10,10 +10,10 @@ services:
     depends_on:
       - rabbitmq
 
-  monolith:
-    build: ../monolith
+  project:
+    build: ../project
     volumes:
-      - ../monolith:/app
+      - ../project:/app
     depends_on:
       - web-service
 

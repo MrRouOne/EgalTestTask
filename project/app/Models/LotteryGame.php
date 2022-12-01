@@ -5,6 +5,7 @@ namespace App\Models;
 
 use Egal\Model\Model as EgalModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property $id                        {@property-type field} {@primary-key}
@@ -31,8 +32,9 @@ class LotteryGame extends EgalModel
         'updated_at',
     ];
 
-    public function lotteryGameMatches()
+
+    public function lotteryGameMatches(): HasMany
     {
-        return $this->hasMany(LotteryGameMatch::class,'game_id');
+        return $this->hasMany(LotteryGameMatch::class, 'game_id');
     }
 }

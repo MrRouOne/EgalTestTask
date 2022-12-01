@@ -8,20 +8,20 @@ services:
     tty: true
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${MONOLITH_DATABASE:-monolith}
+      POSTGRES_DB: ${PROJECT_DATABASE:-project}
       POSTGRES_USER: ${DATABASE_USERNAME:-user}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-password}
       PGDATA: "/var/lib/postgresql/data/pgdata"
 
-  monolith:
-    container_name: ${PROJECT_NAME:-project}-monolith
+  project:
+    container_name: ${PROJECT_NAME:-project}-project
     tty: true
     restart: on-failure
     environment:
-      APP_SERVICE_KEY: ${MONOLITH_KEY:-siu2hrf0gdfvcg67433xxsd}
-      APP_SERVICE_NAME: monolith
+      APP_SERVICE_KEY: ${PROJECT_KEY:-siu2hrf0gdfvcg67433xxsd}
+      APP_SERVICE_NAME: project
       APP_DEBUG: ${APP_DEBUG:-false}
-      DB_DATABASE: ${MONOLITH_DATABASE:-monolith}
+      DB_DATABASE: ${PROJECT_DATABASE:-project}
       DB_HOST: ${PROJECT_NAME:-project}-database
       DB_PORT: ${DATABASE_PORT:-5432}
       DB_USERNAME: ${DATABASE_USERNAME:-user}

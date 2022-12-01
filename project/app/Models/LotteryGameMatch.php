@@ -5,8 +5,11 @@ namespace App\Models;
 use App\Events\CreatingLotteryGameMatchEvent;
 use App\Events\UpdatedLotteryGameMatchEvent;
 use App\Events\UpdatingLotteryGameMatchEvent;
+use App\Helpers\ValidatorHelper;
 use Egal\Model\Model as EgalModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property $id                        {@property-type field} {@primary-key}
@@ -19,6 +22,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  *
  * @action create                       {@statuses-access logged} {@roles-access admin}
  * @action closure                      {@statuses-access logged} {@roles-access admin}
+ * @action getItems                     {@statuses-access guest|logged} {@roles-access admin|user}
  */
 class LotteryGameMatch extends EgalModel
 {
@@ -38,29 +42,32 @@ class LotteryGameMatch extends EgalModel
 
     protected $dispatchesEvents = [
         'creating' => CreatingLotteryGameMatchEvent::class,
-        'updated' => UpdatedLotteryGameMatchEvent::class,
         'updating' => UpdatingLotteryGameMatchEvent::class,
+        'updated' => UpdatedLotteryGameMatchEvent::class,
     ];
 
-    public static function actionClosure($id)
-    {
-        $winner = self::query()->findOrFail($id)->users()->inRandomOrder()->first();
-        $winner = !$winner ? User::query()->inRandomOrder()->first() : $winner;
 
-        return self::actionUpdate($id, ['winner_id' => $winner->id]);
+    public static function actionClosure($id): array
+    {
+        ValidatorHelper::validate(['id' => $id], [
+            'id' => 'required|integer|exists:lottery_game_matches',
+        ]);
+
+        return self::actionUpdate($id, ['winner_id' => 1]);
     }
 
-    public function lotteryGame()
+
+    public function lotteryGame(): BelongsTo
     {
         return $this->belongsTo(LotteryGame::class, 'game_id');
     }
 
-    public function winner()
+    public function winner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'winner_id');
     }
 
-    public function users()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'lottery_game_match_users', 'lottery_game_match_id', 'user_id');
     }

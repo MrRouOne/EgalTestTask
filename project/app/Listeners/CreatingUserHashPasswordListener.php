@@ -11,7 +11,7 @@ class CreatingUserHashPasswordListener
 
     public function handle(Event $event): void
     {
-       $event->getModel()->setAttribute('password',Hash::make($event->getModel()->getAttribute('password')));
+        $event->getModel()->setAttribute('password', Hash::make($event->getModel()->getAttribute('password')));
     }
 
 }

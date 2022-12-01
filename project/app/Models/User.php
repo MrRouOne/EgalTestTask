@@ -10,6 +10,8 @@ use Egal\AuthServiceDependencies\Exceptions\LoginException;
 use Egal\AuthServiceDependencies\Models\User as BaseUser;
 use Egal\Core\Session\Session;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Hash;
 use Staudenmeir\EloquentHasManyDeep\HasRelationships;
 
@@ -26,8 +28,8 @@ use Staudenmeir\EloquentHasManyDeep\HasRelationships;
  *
  * @action register                     {@statuses-access guest}
  * @action login                        {@statuses-access guest}
- * @action change                       {@statuses-access logged}
- * @action remove                       {@statuses-access logged}
+ * @action change                       {@statuses-access logged} {@roles-access user}
+ * @action remove                       {@statuses-access logged} {@roles-access user}
  * @action getItems                     {@statuses-access logged} {@roles-access admin}
  */
 class User extends BaseUser
@@ -55,55 +57,53 @@ class User extends BaseUser
 
     protected $dispatchesEvents = [
         'creating' => CreatingUserEvent::class,
-        'updating' => UpdatingUserEvent::class,
-        'deleting' => DeletingUserEvent::class,
+        'updating' => UpdatingUserEvent::class
     ];
 
-    public static function actionRegister(array $attributes)
+
+    public static function actionRegister(array $attributes): array
     {
         return self::actionCreate($attributes);
     }
 
-    public static function actionChange(array $attributes)
+    public static function actionChange(array $attributes): array
     {
         $id = Session::getUserServiceToken()->getAuthInformation()['id'];
         return self::actionUpdate($id, $attributes);
     }
 
-    public static function actionRemove()
+    public static function actionRemove(): array
     {
         $id = Session::getUserServiceToken()->getAuthInformation()['id'];
         return self::actionDelete($id);
     }
 
-    public static function actionLogin(string $email, string $password)
+    public static function actionLogin(string $email, string $password): string
     {
-        $user = self::query()
-            ->where('email', '=', $email)
-            ->first();
+        $user = self::query()->where('email', '=', $email)->first();
 
-        if (!$user || !Hash::check($password,$user->getAttribute('password'))) {
+        if (!$user || !Hash::check($password, $user->getAttribute('password'))) {
             throw new LoginException('Incorrect Email or password!');
         }
 
         $ust = new UserServiceToken();
         $ust->setSigningKey(env('APP_SERVICE_KEY'));
         $ust->setAuthInformation($user->generateAuthInformation());
-        $ust->setTargetServiceName("monolith");
+        $ust->setTargetServiceName("project");
 
         return $ust->generateJWT();
     }
 
-    public function winMatches()
+
+    public function winMatches(): HasMany
     {
         return $this->hasMany(LotteryGameMatch::class, 'winner_id');
     }
 
-    public function lotteryGameMatches()
+    public function lotteryGameMatches(): BelongsToMany
     {
         return $this->belongsToMany(LotteryGameMatch::class, 'lottery_game_match_users', 'user_id', 'lottery_game_match_id');
     }
-
 
     protected function getRoles(): array
     {

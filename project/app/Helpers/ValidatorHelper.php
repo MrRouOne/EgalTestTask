@@ -7,7 +7,8 @@ use Illuminate\Support\Facades\Validator;
 
 class ValidatorHelper
 {
-    public static function validate($data, $rules) {
+    public static function validate($data, $rules)
+    {
         $validator = Validator::make($data, $rules);
 
         if ($validator->fails()) {
