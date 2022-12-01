@@ -1520,7 +1520,7 @@
 	"variable": [
 		{
 			"key": "services_url",
-			"value": "{{url}}/monolith",
+			"value": "{{url}}/project",
 			"type": "string"
 		}
 	]
