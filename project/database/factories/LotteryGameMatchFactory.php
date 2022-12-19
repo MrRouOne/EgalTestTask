@@ -15,10 +15,10 @@ class LotteryGameMatchFactory extends Factory
     public function definition(): array
     {
         return [
-            'game_id' => LotteryGame::factory(),
+            'game_id' => $this->faker->numberBetween(1, LotteryGame::query()->count()),
             'start_date' => $this->faker->date,
             'start_time' => $this->faker->time,
-            'winner_id' => User::factory(),
+            'winner_id' => $this->faker->numberBetween(1, User::query()->count()),
         ];
     }
 

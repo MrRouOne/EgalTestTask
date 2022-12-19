@@ -5,7 +5,7 @@ namespace App\Listeners;
 use App\Events\AbstractEvent;
 use App\Helpers\ValidatorHelper;
 
-class CreatingUserValidateListener extends AbstractListener
+class CreatingLGMUserAdminValidateListener extends AbstractListener
 {
     /**
      * @throws \Egal\Model\Exceptions\ValidateException
@@ -17,13 +17,9 @@ class CreatingUserValidateListener extends AbstractListener
         ValidatorHelper::validate(
             $model->getAttributes(),
             [
-                'first_name' => 'required|string',
-                'last_name' => 'required|string',
-                'email' => 'required|email|unique:users',
-                'password' => 'required|string',
+                'lottery_game_match_id' => 'required|integer|exists:lottery_game_matches,id',
+                'user_id' => 'required|integer|exists:users,id',
             ]
         );
-
-        $model->setAttribute('points', 0);
     }
 }

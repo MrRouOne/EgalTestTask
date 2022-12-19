@@ -1,61 +1,47 @@
-<?php /** @noinspection PhpMissingFieldTypeInspection */
+<?php
 
 namespace App\Providers;
 
+use App\Events\ClosureLotteryGameMatchEvent;
 use App\Events\CreatingLotteryGameMatchEvent;
 use App\Events\CreatingLotteryGameMatchUserEvent;
 use App\Events\CreatingUserEvent;
-use App\Events\UpdatedLotteryGameMatchEvent;
-use App\Events\UpdatingLotteryGameMatchEvent;
+use App\Events\DeletingUserEvent;
 use App\Events\UpdatingUserEvent;
-use App\Listeners\CreatingLotteryGameMatchUserCheckAlreadyRecordListener;
-use App\Listeners\CreatingLotteryGameMatchUserCheckClosureListener;
-use App\Listeners\CreatingLotteryGameMatchUserCheckGamerCountListener;
-use App\Listeners\CreatingLotteryGameMatchUserValidateListener;
-use App\Listeners\CreatingLotteryGameMatchValidateListener;
-use App\Listeners\CreatingUserHashPasswordListener;
+use App\Listeners\ClosureLGMatchTransactionListener;
+use App\Listeners\CreatingLGMatchValidateListener;
+use App\Listeners\CreatingLGMUserTransactionListener;
 use App\Listeners\CreatingUserValidateListener;
-use App\Listeners\UpdatedLotteryGameMatchSetWinnerPointsListener;
-use App\Listeners\UpdatingLotteryGameMatchCheckWinnerListener;
-use App\Listeners\UpdatingLotteryGameMatchSetWinnerListener;
-use App\Listeners\UpdatingUserHashPasswordListener;
-use App\Listeners\UpdatingUserValidateListener;
+use App\Listeners\DeletingUserAssignValidateListener;
+use App\Listeners\HashingPasswordListener;
+use App\Listeners\UpdatingUserAssignValidateListener;
 use Egal\Core\Events\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
 {
-
-    /**
-     * Определение обработчиков локальных событий
-     */
     protected $listen = [
         // User
         CreatingUserEvent::class => [
             CreatingUserValidateListener::class,
-            CreatingUserHashPasswordListener::class,
+            HashingPasswordListener::class,
         ],
         UpdatingUserEvent::class => [
-            UpdatingUserValidateListener::class,
-            UpdatingUserHashPasswordListener::class
+            UpdatingUserAssignValidateListener::class,
+            HashingPasswordListener::class
+        ],
+        DeletingUserEvent::class => [
+            DeletingUserAssignValidateListener::class,
         ],
         // LotteryGameMatch
         CreatingLotteryGameMatchEvent::class => [
-            CreatingLotteryGameMatchValidateListener::class,
+            CreatingLGMatchValidateListener::class,
         ],
-        UpdatingLotteryGameMatchEvent::class => [
-            UpdatingLotteryGameMatchSetWinnerListener::class,
-            UpdatingLotteryGameMatchCheckWinnerListener::class,
-        ],
-        UpdatedLotteryGameMatchEvent::class => [
-            UpdatedLotteryGameMatchSetWinnerPointsListener::class,
+        ClosureLotteryGameMatchEvent::class => [
+            ClosureLGMatchTransactionListener::class,
         ],
         // LotteryGameMatchUser
         CreatingLotteryGameMatchUserEvent::class => [
-            CreatingLotteryGameMatchUserValidateListener::class,
-            CreatingLotteryGameMatchUserCheckClosureListener::class,
-            CreatingLotteryGameMatchUserCheckAlreadyRecordListener::class,
-            CreatingLotteryGameMatchUserCheckGamerCountListener::class,
+            CreatingLGMUserTransactionListener::class
         ],
     ];
-
 }

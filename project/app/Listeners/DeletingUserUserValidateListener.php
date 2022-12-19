@@ -5,7 +5,7 @@ namespace App\Listeners;
 use App\Events\AbstractEvent;
 use App\Helpers\ValidatorHelper;
 
-class CreatingUserValidateListener extends AbstractListener
+class DeletingUserUserValidateListener extends AbstractListener
 {
     /**
      * @throws \Egal\Model\Exceptions\ValidateException
@@ -17,13 +17,8 @@ class CreatingUserValidateListener extends AbstractListener
         ValidatorHelper::validate(
             $model->getAttributes(),
             [
-                'first_name' => 'required|string',
-                'last_name' => 'required|string',
-                'email' => 'required|email|unique:users',
-                'password' => 'required|string',
+                'id' => 'required|integer|exists:users,id|owner',
             ]
         );
-
-        $model->setAttribute('points', 0);
     }
 }

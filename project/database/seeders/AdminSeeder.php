@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
 {
@@ -16,13 +15,15 @@ class AdminSeeder extends Seeder
     public function run()
     {
         if (!User::query()->where('is_admin', '=', true)->exists()) {
-            User::factory()->create([
+            User::factory()->create(
+                [
                 'first_name' => "admin",
                 'last_name' => "admin",
                 'email' => "admin@gmail.com",
                 'password' => 'admin',
                 'is_admin' => true,
-            ]);
+                ]
+            );
         }
 
     }

@@ -15,8 +15,8 @@ class LotteryGameMatchUserFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
-            'lottery_game_match_id' => LotteryGameMatch::factory(),
+            'user_id' => $this->faker->numberBetween(1, User::query()->count()),
+            'lottery_game_match_id' => $this->faker->numberBetween(1, LotteryGameMatch::query()->count()),
         ];
     }
 

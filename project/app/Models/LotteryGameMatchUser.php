@@ -3,20 +3,24 @@
 namespace App\Models;
 
 use App\Events\CreatingLotteryGameMatchUserEvent;
-use Egal\Core\Session\Session;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Egal\Model\Model as EgalModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @property $id                        {@property-type field} {@primary-key}
- * @property $user_id                   {@property-type field}
- * @property $lottery_game_match_id     {@property-type field}
- * @property $created_at                {@property-type field}
- * @property $updated_at                {@property-type field}
+ * @property integer $id                        {@property-type field} {@primary-key}
+ * @property integer $user_id                   {@property-type field}
+ * @property integer $lottery_game_match_id     {@property-type field}
+ * @property Carbon $created_at                 {@property-type field}
+ * @property Carbon $updated_at                 {@property-type field}
  *
- * @action recordToMatch                       {@statuses-access logged} {@roles-access user}
+ * @property User $user                         {@property-type relation}
+ * @property LotteryGameMatch $match            {@property-type relation}
+ *
+ * @action create                               {@statuses-access logged} {@roles-access admin|user}
  */
+
 class LotteryGameMatchUser extends EgalModel
 {
     use HasFactory;
@@ -34,14 +38,6 @@ class LotteryGameMatchUser extends EgalModel
     protected $dispatchesEvents = [
         'creating' => CreatingLotteryGameMatchUserEvent::class
     ];
-
-
-    public static function actionRecordToMatch($attributes): array
-    {
-        $attributes['user_id'] = Session::getUserServiceToken()->getAuthInformation()['id'];
-        return parent::actionCreate($attributes);
-    }
-
 
     public function user(): BelongsTo
     {
