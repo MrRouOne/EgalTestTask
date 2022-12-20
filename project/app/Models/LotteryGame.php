@@ -17,7 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * @property LotteryGameMatch $matches          {@property-type relation}
  *
- * @action getItems                             {@statuses-access logged}
+ * @action getItems                             {@statuses-access guest|logged} {@roles-access admin|user}
  */
 class LotteryGame extends EgalModel
 {

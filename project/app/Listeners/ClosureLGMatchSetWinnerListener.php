@@ -12,7 +12,7 @@ class ClosureLGMatchSetWinnerListener extends AbstractListener
         $model = $event->getModel();
         $winner = $model->users()->inRandomOrder()->first();
 
-        $winner = $winner ?: User::query()->inRandomOrder()->first();
+        $winner = $winner ?: User::query()->inRandomOrder()->firstOrFail();
 
         $model->update(['winner_id' => $winner->id]);
     }
