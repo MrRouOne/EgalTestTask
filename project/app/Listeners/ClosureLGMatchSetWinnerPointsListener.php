@@ -3,6 +3,7 @@
 namespace App\Listeners;
 
 use App\Events\AbstractEvent;
+use App\Models\User;
 
 class ClosureLGMatchSetWinnerPointsListener extends AbstractListener
 {
@@ -10,7 +11,7 @@ class ClosureLGMatchSetWinnerPointsListener extends AbstractListener
     {
         $model = $event->getModel();
 
-        $winner = $model->winner;
+        $winner = User::query()->lockForUpdate()->findOrFail($model->winner->getAttribute('id'));
         $reward_points = $model->lotteryGame->getAttribute('reward_points');
         $winner->update(['points' => $winner->getAttribute('points') + $reward_points]);
     }

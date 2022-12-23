@@ -2,16 +2,15 @@
 
 namespace App\Listeners;
 
-use App\Constants\LockTableModsConstants;
 use App\Events\AbstractEvent;
+use App\Helpers\TransactionHelper;
 
-class ClosureLGMatchTransactionListener extends TransactionListener
+class ClosureLGMatchTransactionListener
 {
     public function handle(AbstractEvent $event): void
     {
-        $this->transaction(
+        TransactionHelper::transaction(
             $event,
-            LockTableModsConstants::ACCESS_EXCLUSIVE,
             ClosureLGMatchCheckWinnerListener::class,
             ClosureLGMatchSetWinnerListener::class,
             ClosureLGMatchSetWinnerPointsListener::class,

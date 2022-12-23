@@ -1,14 +1,25 @@
 <?php
 
-namespace App\Listeners;
+namespace App\Helpers;
 
 use App\Constants\LockTableModsConstants;
 use App\Events\AbstractEvent;
 use Illuminate\Support\Facades\DB;
 
-class TransactionListener
+class TransactionHelper
 {
-    public function transaction(
+    public static function transaction(AbstractEvent $event, string ...$listeners): void
+    {
+        DB::transaction(
+            function () use ($event, $listeners) {
+                foreach ($listeners as $listener) {
+                    (new $listener)->handle($event);
+                }
+            }
+        );
+    }
+
+    public static function transactionWithLock(
         AbstractEvent $event,
         string        $mode = LockTableModsConstants::ACCESS_EXCLUSIVE,
         string        ...$listeners

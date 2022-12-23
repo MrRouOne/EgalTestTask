@@ -4,14 +4,15 @@ namespace App\Listeners;
 
 use App\Constants\LockTableModsConstants;
 use App\Events\AbstractEvent;
+use App\Helpers\TransactionHelper;
 
-class CreatingLGMUserTransactionListener extends TransactionListener
+class CreatingLGMUserTransactionListener
 {
     public function handle(AbstractEvent $event): void
     {
-        $this->transaction(
+        TransactionHelper::transactionWithLock(
             $event,
-            LockTableModsConstants::ACCESS_EXCLUSIVE,
+            LockTableModsConstants::ROW_EXCLUSIVE,
             CreatingLGMUserAssignValidateListener::class,
             CreatingLGMUserCheckClosureListener::class,
             CreatingLGMUserCheckAlreadyRecordListener::class,
